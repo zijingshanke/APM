@@ -1,0 +1,172 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.chinarewards.apm.elt</groupId>
+	<artifactId>elt-apm</artifactId>
+	<version>1.0</version>
+	
+	<name>APM</name>
+	<packaging>jar</packaging>
+
+	<properties>
+		<elt.version>1.5.1</elt.version>
+		
+		<plexus-utils.version>1.5.6</plexus-utils.version>
+
+		<staging.dir>${project.build.directory}/izpack</staging.dir>
+		<izpack-standalone.version>4.3.1</izpack-standalone.version>
+		<izpack2exe.dir>${basedir}/IzPack/utils/wrappers/izpack2exe</izpack2exe.dir>
+	
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.codehaus.izpack</groupId>
+			<artifactId>izpack-standalone-compiler</artifactId>
+			<version>${izpack-standalone.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.plexus</groupId>
+			<artifactId>plexus-utils</artifactId>
+			<version>${plexus-utils.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<defaultGoal>package</defaultGoal>
+		<finalName>${project.artifactId}</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
+
+		<plugins>
+
+			<!-- configure the compiler to use 1.5 -->
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+
+			<!-- copy other checked resource into staging area, expected by install.xml -->
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<id>create-staging-area</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+
+							<tasks>
+								<copy todir="${staging.dir}">
+									<fileset dir="${basedir}/src/main/java" />
+									<fileset dir="${basedir}/src/main/resources" />
+
+									<fileset dir="${basedir}/src/main/resources/com/chinarewards/elt" />
+								</copy>
+							</tasks>
+						</configuration>
+					</execution>
+					<execution>
+						<id>IzPack-Platform-Executable</id>
+						<phase>install</phase>
+						<configuration>
+							<tasks>
+
+							<exec executable="python" dir="${izpack2exe.dir}">
+									<arg value="${izpack2exe.dir}/izpack2exe.py" />
+									<arg value="--file=${project.build.directory}/${project.artifactId}-standard.jar" />
+									<arg value="--no-upx" />
+									<arg value="--output=${project.build.directory}/elt-install-${elt.version}.exe" />
+										<arg value="--with-7z" />
+									<arg value="7z" />
+								</exec>
+
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- prepare dependencies so that izpack jar tag to pickup at compile 
+				time -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.0</version>
+				<executions>
+					<execution>
+						<id>standard-installer</id>
+						<!--<phase>process-resources</phase> -->
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+
+							<includeGroupIds>org.codehaus.izpack</includeGroupIds>
+							<includeArtifacIds>izpack-standalone-compiler</includeArtifacIds>
+							<classifier>izpack2exe</classifier>
+							<type>zip</type>
+							<stripVersion>true</stripVersion>
+							<excludeGroupIds>org.codehaus.izpack</excludeGroupIds> <!-- dont want standalone compiler -->
+							<outputDirectory>${staging.dir}/dependency</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+
+			<!-- see install.xml to see how MyHelloPanel is used -->
+			<plugin>
+				<groupId>org.codehaus.izpack</groupId>
+				<artifactId>izpack-maven-plugin</artifactId>
+				<version>1.0-alpha-5</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.codehaus.izpack</groupId>
+						<artifactId>izpack-standalone-compiler</artifactId>
+						<version>${izpack-standalone.version}</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<izpackBasedir>${staging.dir}</izpackBasedir>
+					<customPanelDirectory>${staging.dir}</customPanelDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<id>standard-installer</id>
+						<phase>package</phase>
+						<goals>
+							<goal>izpack</goal>
+						</goals>
+						<configuration>
+							<!--Generate an EXE using izpack2exe -->
+							<generateExe>true</generateExe>
+							<!--Generate an APP using izpack2app -->
+							<generateApp>true</generateApp>
+
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+
+	</build>
+
+</project>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+
+<shortcuts>
+	<programGroup defaultName="ChinaRewards" location="applications" />
+
+
+	<shortcut name="StartELT" programGroup="yes" desktop="yes"
+		applications="no" startMenu="no" startup="no"
+		target="$INSTALL_PATH/conf/startELT.sh" commandLine=""
+		description="start ELT Service" iconIndex="0" initialState="normal"
+		workingDirectory="$INSTALL_PATH">
+		<createForPack name="Resource" />
+	</shortcut>
+
+	<!-- iconFile="$INSTALL_PATH\bin\icons\izpack.ico" -->
+	<shortcut name="StartDBServer" programGroup="yes" desktop="yes"
+		applications="no" startMenu="no" startup="no"
+		target="$INSTALL_PATH/conf/startDBServer.sh" commandLine=""
+		description="ELT DB Service,you must start it first" iconIndex="0"
+		initialState="noShow" workingDirectory="$INSTALL_PATH">
+		<createForPack name="Resource" />
+	</shortcut>
+
+
+
+
+
+</shortcuts>

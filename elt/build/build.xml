@@ -1,0 +1,42 @@
+<?xml version="1.0"  encoding="UTF-8" ?>
+<project name="kurui-base" basedir="." >
+
+	<property name="app.name" value="kurui-base" />
+	<property name="app.version" value="1.0.1" />
+	<property name="dist.jar.name" value="${app.name}${app.version}.jar" />
+	<property name="root.dir" location="F:/project/kums-base" />
+	<property name="doc.dir" location="${root.dir}/api" />
+	<property name="build.dir" location="${root.dir}/build" />
+
+	<property name="packages" value="com.kurui.kums.*" />
+
+	<echo>app.name: ${app.name}${app.version}</echo>
+	<echo>app.name: ${dist.jar.name}</echo>
+
+	<!-- 初始化应用程序，删除相关目录-->
+	<target name="clean" description="Delete build files">
+		<delete dir="${class.dir}" />
+		<delete dir="${dist.dir}" />
+	</target>
+
+
+	<!-- 初始化创建相关应用目录   -->
+	<target name="prepare" depends="clean" description="create build,dist files">
+		<mkdir dir="${class.dir}" />
+		<mkdir dir="${dist.dir}" />
+	</target>
+
+
+	<!-- Allows us to use the IzPack Ant task, standalone-compiler.jar added to Ant lib -->
+	<taskdef name="izpack" classpath="${install.lib}/standalone-compiler.jar" classname="com.izforge.izpack.ant.IzPackTask" />
+
+	<!-- Run installer build -->
+	<echo message="Running IzPack to build the installer..." />
+	<izpack input="install-definition.xml" output="${output.dir}/${product.short.name}-${product.version}-install.jar" installerType="standard" inheritAll="true" basedir="${temp.dir}" compression="deflate" compressionlevel="9" />
+	<!-- Clean working directory -->
+	<echo message="Cleaning up working directory..." />
+	<delete dir="${temp.dir}" quiet="true" includeemptydirs="true" />
+	<echo message="Done." />
+
+
+</project>

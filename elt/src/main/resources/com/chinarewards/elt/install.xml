@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<installation version="1.0">
+
+	<!-- Ant properties in this file can be referenced with @{}, otherwise use 
+		variables below in installer files with ${} -->
+
+	<info>
+		<appname>ELT</appname>
+		<appversion>1.5.1</appversion>
+		<url>http://www.china-rewards.com</url>
+		<javaversion>1.4.2</javaversion>
+	</info>
+
+	<!-- 安装界面 -->
+	<guiprefs width="600" height="480" resizable="yes">
+		<laf name="kunststoff">
+			<os family="unix" />
+		</laf>
+		<modifier key="useHeadingPanel" value="yes" />
+		<modifier key="useHeadingForSummary" value="yes" />
+		<modifier key="headingImageOnLeft" value="yes" />
+		<modifier key="headingLineCount" value="2" />
+		<modifier key="headingFontSize" value="1.5" />
+		<modifier key="headingBackgroundColor" value="0x00ffffff" />
+		<modifier key="headingPanelCounter" value="text" />
+		<modifier key="headingPanelCounterPos" value="inHeading" />
+
+		<modifier key="langDisplayType" value="default"></modifier>
+	</guiprefs>
+
+	<locale>
+		<langpack iso3="chn" />
+		<langpack iso3="eng" />
+	</locale>
+
+	<!-- Need to define ant properties we want to use during install as variables -->
+	<variables>
+		<!--**显示快捷键创建窗口标识** -->
+		<variable name="DesktopShortcutCheckboxEnabled" value="true" />
+	</variables>
+
+	<!--**安装界面资源定义** -->
+	<resources>
+		<!--**XX安装语言选择窗口图片** -->
+		<res src="Splash.png" id="installer.langsel.img" />
+
+		<!--**XX安装说明文件** -->
+		<res src="readme.html" id="HTMLInfoPanel.info" parse="yes" type="plain"
+			encoding="UTF-8" />
+		<res src="readme_chn.html" id="HTMLInfoPanel.info_chn" parse="yes"
+			type="plain" encoding="UTF-8" />
+
+		<!--**XX产品版本说明文件** -->
+		<res src="license.html" id="HTMLLicencePanel.licence" parse="yes"
+			type="plain" encoding="UTF-8" />
+		<res src="license_chn.html" id="HTMLLicencePanel.licence_chn"
+			parse="yes" type="plain" encoding="UTF-8" />
+
+		<!--**快捷键定义描述** -->
+		<res src="shortcutSpec.xml" id="shortcutSpec.xml" parse="yes"
+			type="xml" encoding="UTF-8" />
+		<res src="Unix_shortcutSpec.xml" id="Unix_shortcutSpec.xml" parse="yes"
+			type="xml" encoding="UTF-8" />
+
+		<!--**Pack Lang** -->
+		<res src="packsLang.xml" id="packsLang.xml" />
+		<res src="packsLang_chn.xml" id="packsLang.xml_chn" />
+
+		<!--**自定义窗口定义描述** -->
+		<!-- <res src="UserInputSpec.xml" id="userInputSpec.xml" /> <res src="UserInputLang.xml" 
+			id="userInputLang.xml" /> <res src="UserInputLang_chn.xml" id="userInputLang.xml_chn" 
+			/> -->
+	</resources>
+
+	<!--**安装界面定义** -->
+	<panels>
+		<!--**显示公司版权信息** -->
+		<!-- <panel classname="HTMLLicencePanel" /> -->
+		<!--**显示ReadMe信息** -->
+		<!-- <panel classname="HTMLInfoPanel" /> -->
+		<!--**选择安装目标** -->
+		<panel classname="TargetPanel" />
+		<!--**选择安装内容** -->
+		<panel classname="PacksPanel" />
+		<!--**显示用户安装输入配置** -->
+		<!-- <panel classname="SummaryPanel" /> -->
+		<!--**开始安装** -->
+		<panel classname="InstallPanel" />
+
+		<!--**显示快捷键创建窗口** -->
+		<!----> <panel classname="ShortcutPanel" /> 
+
+		<!--**显示安装完成窗口** -->
+		<panel classname="SimpleFinishPanel" />
+	</panels>
+	<!--**安装包的定义** -->
+	<packs>
+		<!--**依赖环境** -->
+		<!-- <pack id="Java" name="Java" required="no"> <description>jdk</description> 
+			<fileset dir="Java" targetdir="$INSTALL_PATH/Java"> <include name="*" /> 
+			<include name="**" /> </fileset> </pack> <pack id="JBoss" name="JBoss" required="no"> 
+			<description>jboss-5.1.0.GA</description> <fileset dir="jboss-5.1.0.GA" targetdir="$INSTALL_PATH/jboss-5.1.0.GA"> 
+			<include name="*" /> <include name="**" /> </fileset> </pack> <pack id="License" 
+			name="License" required="no"> <description>license</description> <fileset 
+			dir="license" targetdir="$INSTALL_PATH/license"> <include name="*.lic" /> 
+			</fileset> </pack> -->
+		<!-- EAR -->
+		<!-- <pack id="Ear" name="Ear" required="yes"> <description>Ear</description> 
+			<fileset dir="ear" targetdir="$INSTALL_PATH/jboss-5.1.0.GA/server/default/deploy"> 
+			<include name="*.ear" /> </fileset> </pack> -->
+		<pack id="db" name="db" required="yes">
+		<description>db</description> 
+			<fileset dir="hsqldb" targetdir="$INSTALL_PATH/hsqldb">
+				<include name="*" />
+			</fileset>
+		</pack>
+
+		<!--**资源包** -->
+		<pack id="Resource" name="Resource" required="yes">
+			<description>resource</description>
+			<fileset dir="com/chinarewards/elt" targetdir="$INSTALL_PATH/doc">
+				<include name="*" />
+				<include name="**" />
+			</fileset>
+
+			<file src="startELT.bat" targetdir="$INSTALL_PATH/conf" />
+			<file src="startELT.sh" targetdir="$INSTALL_PATH/conf" />
+			<file src="startDBServer.bat" targetdir="$INSTALL_PATH/conf" />
+			<file src="startDBServer.sh" targetdir="$INSTALL_PATH/conf" />
+
+			<parsable targetfile="$INSTALL_PATH/conf/startELT.bat" type="plain" />
+			<parsable targetfile="$INSTALL_PATH/conf/startELT.sh" type="plain" />
+			<parsable targetfile="$INSTALL_PATH/conf/startDBServer.bat"
+				type="plain" />
+			<parsable targetfile="$INSTALL_PATH/conf/startDBServer.sh"
+				type="plain" />
+
+		
+
+			<!-- 执行 脚本 -->
+			<!-- 			
+			<executable targetfile="$INSTALL_PATH/startDBServer.bat"
+				stage="postinstall" keep="false" failure="abort">
+				<os family="windows" />
+			</executable>
+
+			<executable targetfile="$INSTALL_PATH/startELT.bat" stage="postinstall"
+				keep="false" failure="abort">
+				<os family="windows" />
+			</executable>			
+			-->
+
+			<!-- <parsable targetfile="$INSTALL_PATH/installer.properties" type="javaprop" 
+				/> <parsable targetfile="$INSTALL_PATH/installer.bat" type="plain" /> <executable 
+				targetfile="$INSTALL_PATH/installer.bat" stage="postinstall" keep="false" 
+				failure="abort"> <os family="windows" /> </executable> -->
+		</pack>
+	</packs>
+	
+	<!-- 创建快捷方式必需 -->
+	<native type="izpack" name="ShellLink.dll"/>
+	<native type="izpack" name="ShellLink_x64.dll"/>
+
+	<!--**安装程序所需要的其它Jar文件夹** -->
+	<!-- <jar src="dbdrivers/mssqlserver.jar" stage="both" /> <jar src="dbdrivers/msutil.jar" 
+		stage="both" /> <jar src="dbdrivers/msbase.jar" stage="both" /> <jar src="dbdrivers/ojdbc14.jar" 
+		stage="both" /> <jar src="dbdrivers/orai18n.jar" stage="both" /> -->
+</installation>
